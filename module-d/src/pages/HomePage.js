@@ -49,8 +49,8 @@ function HomePage() {
                 })
             })
             console.log(userData);
-            setUsers(userData) 
             setPosts(tempPosts);
+            setUsers(userData) 
         }
         fetchData()
     }, [])
