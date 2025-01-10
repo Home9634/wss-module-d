@@ -8,7 +8,9 @@ function UserProfilePage() {
     const [user, setUser] = useState({})
     const [posts, setPosts] = useState([]);
     const [users, setUsers] = useState([]);
-    
+
+    const [degrees, setDegrees] = useState([]);
+
     useEffect(() => {
         async function fetchData() {
             const postResponse = await fetch("https://mocki.io/v1/56029e01-f435-4b2c-896d-b5cbaaab4356")
@@ -33,7 +35,7 @@ function UserProfilePage() {
 
             Object.keys(userData.users).forEach(key => {
                 const user = userData.users[key]
-                friendMapping[key] = [] 
+                friendMapping[user.username] = []
 
                 let likes = 0
                 let posts = 0
@@ -62,39 +64,84 @@ function UserProfilePage() {
                     }
                 })
 
+                Object.keys(userData.users).forEach(key => {
+                    let tempUser = userData.users[key]
+
+                    Object.keys(tempUser.friendRequests).forEach(key => {
+                        let request = tempUser.friendRequests[key]
+                        if (request.accepted && request.user == user.username) {
+                            friendMapping[user.username].push(tempUser.username)
+                        }
+                    })
+                })
+
                 userData.users[key].friends = friends
 
                 if (user.username == id) {
                     setUser(user)
                 }
             })
-            console.log(userData);
-            setPosts(tempPosts);
-            setUsers(userData)
+
 
             // Get friend circle
-            let queue = [[user.username, 0]]
+            let queue = [[id, 0]]
             let degrees = {}
-            
+            let degreesArr = []
+            let times = 0
+
+            // console.log(userData);
+            setPosts(tempPosts);
+            setUsers(userData)
+         
             while (queue.length > 0) {
-                let current = queue.unshift()
-                
+                console.log(times)
+                times++
+                let current = queue.shift()
+                console.log(current)
                 if (degrees.hasOwnProperty(current[0])) {
-                    return
+                    console.log(queue)
+                    console.log(degrees)
+                    continue
                 } else {
                     let friends = friendMapping[current[0]]
                     friends.forEach(friend => {
-                        
+                        if (degrees.hasOwnProperty(friend)) {
+                            return
+                        }
+                        queue.push([friend, current[1] + 1])
                     })
-                    if (user.username != user) {
-                        
-                    }   
+                    if (id != current[0]) {
+                        degrees[current[0]] = current[1]
+                        degreesArr.push({ user: current[0], degree: current[1] }) 
+                    }
                 }
             }
+
+            degreesArr = degreesArr.sort((a, b) => {
+                if (a.degree > b.degree) {
+                    return 1
+                } else if (a.degree < b.degree) {
+                    return -1
+                } else {
+                    if (a.user > b.user) {
+                        return 1
+                    } else if (a.user < b.user) {
+                        return -1
+                    } else {
+                        return 0
+                    } 
+                }
+            })
+
+            console.log(degreesArr)
             
+            setDegrees(degreesArr)
+
         }
         fetchData()
     }, [id])
+
+    console.log(degrees)
 
     return (
         <div>
@@ -107,12 +154,13 @@ function UserProfilePage() {
                 <div>Comments made: {user.comments}</div>
                 <br />
                 <h5>Friend Circle</h5>
-                <ul class="list-group mt-4">
-                    <li class="list-group-item">An item</li>
-                    <li class="list-group-item">A second item</li>
-                    <li class="list-group-item">A third item</li>
-                    <li class="list-group-item">A fourth item</li>
-                    <li class="list-group-item">And a fifth one</li>
+                <ul className="list-group mt-4">
+                    {
+                        degrees.map((degree) => {
+                            return <li className="list-group-item">{degree.user} ({degree.degree} degree)</li>
+ 
+                        })
+                    }                 
                 </ul>
                 <br />
             </div>
