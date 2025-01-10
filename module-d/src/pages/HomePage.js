@@ -7,7 +7,7 @@ function HomePage() {
     const [posts, setPosts] = useState([]);
     const [users, setUsers] = useState([]);
     const [pagination, setPagination] = useState([]);
-    
+
     useEffect(() => {
         async function fetchData() {
             const postResponse = await fetch("https://mocki.io/v1/56029e01-f435-4b2c-896d-b5cbaaab4356")
@@ -58,7 +58,9 @@ function HomePage() {
 
     return (
         <div>
-            { posts.map((post) => <Post {...post} {...users} ></Post>) }
+            { posts.map((post, index) => {
+                return <Post {...post} {...users} ></Post>
+            } ) }
             Home Page
         </div>
     )
