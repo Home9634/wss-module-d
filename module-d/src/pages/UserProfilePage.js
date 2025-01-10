@@ -9,7 +9,6 @@ function UserProfilePage() {
     const [posts, setPosts] = useState([]);
     const [users, setUsers] = useState([]);
     
-
     useEffect(() => {
         async function fetchData() {
             const postResponse = await fetch("https://mocki.io/v1/56029e01-f435-4b2c-896d-b5cbaaab4356")
@@ -30,12 +29,16 @@ function UserProfilePage() {
             const userResponse = await fetch("https://mocki.io/v1/2abffcb8-eac4-4021-8a7c-af9aea5e3783")
             const userData = await userResponse.json()
 
+            const friendMapping = {}
+
             Object.keys(userData.users).forEach(key => {
                 const user = userData.users[key]
+                friendMapping[key] = [] 
 
                 let likes = 0
                 let posts = 0
                 let comments = 0
+                let friends = []
 
                 tempPosts.forEach(post => {
                     if (post.username == user.username) {
@@ -52,6 +55,15 @@ function UserProfilePage() {
                     userData.users[key].comments = comments
                 })
 
+                Object.keys(user.friendRequests).forEach(key => {
+                    if (user.friendRequests[key].accepted) {
+                        friends.push(user.friendRequests[key].user)
+                        friendMapping[user.username].push(user.friendRequests[key].user)
+                    }
+                })
+
+                userData.users[key].friends = friends
+
                 if (user.username == id) {
                     setUser(user)
                 }
@@ -59,13 +71,56 @@ function UserProfilePage() {
             console.log(userData);
             setPosts(tempPosts);
             setUsers(userData)
+
+            // Get friend circle
+            let queue = [[user.username, 0]]
+            let degrees = {}
+            
+            while (queue.length > 0) {
+                let current = queue.unshift()
+                
+                if (degrees.hasOwnProperty(current[0])) {
+                    return
+                } else {
+                    let friends = friendMapping[current[0]]
+                    friends.forEach(friend => {
+                        
+                    })
+                    if (user.username != user) {
+                        
+                    }   
+                }
+            }
+            
         }
         fetchData()
     }, [id])
-    
+
     return (
         <div>
+            <div className="container mt-5 border border-2 rounded-2 p-3">
+                <h3>{user.username}</h3>
+                <div>Email: {user.email}</div>
+                <div>Date Joined: {user.date_joined}</div>
+
+                <div>Posts made: {user.posts}</div>
+                <div>Comments made: {user.comments}</div>
+                <br />
+                <h5>Friend Circle</h5>
+                <ul class="list-group mt-4">
+                    <li class="list-group-item">An item</li>
+                    <li class="list-group-item">A second item</li>
+                    <li class="list-group-item">A third item</li>
+                    <li class="list-group-item">A fourth item</li>
+                    <li class="list-group-item">And a fifth one</li>
+                </ul>
+                <br />
+            </div>
+
         </div>
+
+
+
     )
 }
 
