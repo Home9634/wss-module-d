@@ -112,7 +112,7 @@ function UserProfilePage() {
                     })
                     if (id != current[0]) {
                         degrees[current[0]] = current[1]
-                        degreesArr.push({ user: current[0], degree: current[1] }) 
+                        degreesArr.push({ user: current[0], degree: `${current[1]} degree` }) 
                     }
                 }
             }
@@ -130,6 +130,15 @@ function UserProfilePage() {
                     } else {
                         return 0
                     } 
+                }
+            })
+
+            Object.keys(userData.users).forEach(key => {
+                const user = userData.users[key]
+                console.log(user.username)
+
+                if (!degreesArr.some(d => d.user === user.username) && user.username != id) {
+                    degreesArr.push({ user: user.username, degree: "Not connected!"}) 
                 }
             })
 
@@ -157,7 +166,7 @@ function UserProfilePage() {
                 <ul className="list-group mt-4">
                     {
                         degrees.map((degree) => {
-                            return <li className="list-group-item">{degree.user} ({degree.degree} degree)</li>
+                            return <li className="list-group-item">{degree.user} ({degree.degree})</li>
  
                         })
                     }                 

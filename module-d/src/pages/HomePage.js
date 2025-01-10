@@ -6,6 +6,7 @@ function HomePage() {
 
     const [posts, setPosts] = useState([]);
     const [users, setUsers] = useState([]);
+    const [pagination, setPagination] = useState([]);
     
     useEffect(() => {
         async function fetchData() {
